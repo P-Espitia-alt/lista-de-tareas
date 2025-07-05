@@ -33,15 +33,50 @@ window.onload = function () {
 };
 
 function cargar_tareas() {
+  // TODO: Si ya hice login, se debe validar mi sesión activa
+  // TODO: La sesión activa debe durar 10 minutos
+
+  console.log("Cargando tareas desde localStorage");
   let tareas = JSON.parse(localStorage.getItem("tareas")) || [];
-  tareas.forEach((texto) => {
-    input.value = texto;
+  
+  console.log(tareas);
+  tareas.forEach((tarea => {
+
+    input.value = tarea; // Asignar el valor de la tarea al input
+
+    // input.value = todoObj.texto;
+    // todoObj.terminado
     Addtodo();
-  });
+  }));
 }
 
-let input = document.getElementById("input");
-let btn = document.getElementById("btn_todo");
+
+// var texto = 'tarea 1';
+// var terminado = true; //false
+// var id = 123123; // usar Guid o usar random o usar timestamp de la fecha en que se crea (fecha actual) 
+// [
+// {
+// 	"texto" : 'Tarea 1',
+// 	"terminado" : true,
+// 	"id": 8798543
+// },{
+// 	"texto" : 'Tarea 2',
+// 	"terminado" : false,
+// 	"id": 8798545
+// },{
+// 	"texto" : 'Tarea 3',
+// 	"terminado" : true,
+// 	"id": 8798555
+// },{
+// 	"texto" : 'Tarea 4',
+// 	"terminado" : true,
+// 	"id": 8798666
+// }
+// ]
+
+
+let input = document.getElementById("input"); // TODO: Cambiar el id del input a "input_tarea" para mayor claridad
+let btn = document.getElementById("btn_todo"); // todo: Cambiar el id del botón a "btn_agregar_tarea" para mayor claridad
 let cont_todo = document.querySelector(".container_todo");
 let id = 1;
 
@@ -55,17 +90,6 @@ btn.addEventListener("click", () => {
 
 
 })
-
-function guardar() {
-  let tareas = [];
-  let todasLasTareas = document.querySelectorAll(".actividad");
-
-  todasLasTareas.forEach((tarea) => {
-    tareas.push(tarea.innerText);
-  });
-
-  localStorage.setItem("tareas", JSON.stringify(tareas));
-}
 
 function Addtodo() {
   let div_todo = document.createElement("div");
@@ -108,4 +132,17 @@ function Addtodo() {
   guardar();
 }
 
+function guardar() {
+  let tareas = [];
+  let todasLasTareas = document.querySelectorAll(".actividad");
+
+  console.log(todasLasTareas);
+
+
+  todasLasTareas.forEach((tarea) => {
+    tareas.push(tarea.innerText);
+  });
+
+  localStorage.setItem("tareas", JSON.stringify(tareas));
+}
 
