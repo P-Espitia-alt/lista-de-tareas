@@ -1,35 +1,19 @@
 
-var user;
-var cont;
-let dateExp;
-
+var user
+var cont
 
 window.onload = function () {
-
-  if (sessionStorage.getItem('isLoggedIn') === 'true') {
-    dateExp = sessionStorage.getItem('dateExp');
-
-    if (dateExp && Date.now() < parseInt(dateExp, 10)) {
-      document.getElementById('Login').style.display = "none";
-      document.getElementById('ToDoList').style.display = "block";
-      checkExpTime();
-    } else {
-      logOut();
-    }
-  }
-
   let btn = document.getElementById('Iniciar_Sesion');
 
   btn.addEventListener("click", function () {
 
     user = document.getElementById('usuario').value;
-    cont = document.getElementById('password').value;
+    cont = document.getElementById('Contrasena').value;
     console.log("Usuario: ", user + "     " + "Password: ", cont);
 
     if (user == "mariapaula" && cont == "123qwe*") {
       document.getElementById('Login').style.display = "none";
       document.getElementById('ToDoList').style.display = "block";
-      m_long_session();
 
     } else {
 
@@ -39,71 +23,51 @@ window.onload = function () {
       }
 
       if (cont !== "123qwe*") {
-        alert("Contraseña incorrecta");
-        document.getElementById('password').focus();
+        alert("Contrase\u00f1a incorrecta");
+        document.getElementById('Contrasena').focus();
       }
     }
 
   });
-
   cargar_tareas();
 };
 
-function m_long_session() {
-  let expiTime = Date.now() + 600000;
-  sessionStorage.setItem('isLoggedIn', 'true');
-  sessionStorage.setItem('dateExp', expiTime);
-
-  checkExpTime();
-}
-
-function checkExpTime() {
-  let dateExp = parseInt(sessionStorage.getItem('dateExp'), 10);
-  let now = Date.now();
-
-  if (now >= dateExp) {
-    logOut();
-  } else {
-    setTimeout(() => {
-      logOut();
-    }, dateExp - now);
-  }
-}
-
-function logOut() {
-  sessionStorage.removeItem('isLoggedIn');
-  sessionStorage.removeItem('dateExp');
-  alert("Sesion Caducada");
-  location.reload();
-}
-
 function cargar_tareas() {
-
-  console.log("Cargando tareas desde localStorage");
   let tareas = JSON.parse(localStorage.getItem("tareas")) || [];
-
-  tareas.forEach((tarea => {
-    
-    Addtodo(tarea);
-  }));
+  tareas.forEach((texto) => {
+    input.value = texto;
+    Addtodo();
+  });
 }
 
-
-let input = document.getElementById("input_Nueva_Tarea");
-let btn = document.getElementById("btn_agregar_tarea");
+let input = document.getElementById("input");
+let btn = document.getElementById("btn_todo");
 let cont_todo = document.querySelector(".container_todo");
 let id = 1;
 
 btn.addEventListener("click", () => {
   if (input.value === "") {
-    alert("No se ha especificado ninguna nueva tarea");
-    input.focus();
+    alert("No se a especificado ninguna nueva tarea")
+    document.getElementById('input').focus();
   } else {
-    actualizar();
+    Addtodo()
   }
-});
 
-function Addtodo(tarea) {
+
+})
+
+function guardar() {
+  let tareas = [];
+  let todasLasTareas = document.querySelectorAll(".actividad");
+
+  todasLasTareas.forEach((tarea) => {
+    tareas.push(tarea.innerText);
+  });
+
+  localStorage.setItem("tareas", JSON.stringify(tareas));
+}
+
+function Addtodo() {
   let div_todo = document.createElement("div");
   let div_container = document.createElement("div");
   let checkbox = document.createElement("input");
@@ -112,16 +76,12 @@ function Addtodo(tarea) {
   let butt = document.createElement("button");
   let icono = document.createElement("i")
 
-  parrafo.innerHTML = tarea.texto;
+  parrafo.innerHTML = input.value;
   parrafo.classList.add("actividad");
-  if (tarea.tachado) {
-    parrafo.classList.add("tachado");
-  }
   div_todo.classList.add("container_list")
   div_container.classList.add("container_list_1");
   checkbox.classList.add("casilla");
   checkbox.setAttribute("type", "checkbox");
-  checkbox.checked = tarea.terminado;
   div_boton.classList.add("container_list_btn");
   butt.classList.add("btn-eliminar");
 
@@ -140,54 +100,12 @@ function Addtodo(tarea) {
 
   butt.addEventListener("click", () => {
     parrafo.classList.toggle("tachado");
-    guardar();
   });
 
-  checkbox.addEventListener("change", () => {
-    guardar(); 
-  });
 
-  console.log("Tarea agregada:", {
-  texto: tarea.texto,
-  terminado: tarea.terminado,
-  tachado: tarea.tachado,
-  id: tarea.id
-  });
+  input.value = "";
 
-  
+  guardar();
 }
 
-function guardar() {
-  let tareas = [];
-  let todasLasTareas = document.querySelectorAll(".container_list");
-
-  todasLasTareas.forEach((tareaDOM) => {
-    const texto = tareaDOM.querySelector(".actividad").innerText;
-    const terminado = tareaDOM.querySelector("input[type='checkbox']").checked;
-    const tachado = tareaDOM.querySelector(".actividad").classList.contains("tachado");
-
-    tareas.push({
-      texto: texto,
-      terminado: terminado,
-      tachado: tachado,
-      id: Date.now()
-    });
-  });
-
-  localStorage.setItem("tareas", JSON.stringify(tareas));
-}
-
-function actualizar() {
-  const nuevo = {
-    texto: input_Nueva_Tarea.value,
-    terminado: false,
-    tachado: false,
-    id: Date.now()
-  };
-  Addtodo(nuevo);
-
-    input_Nueva_Tarea.value = "";
-
-    guardar()
-}
 
